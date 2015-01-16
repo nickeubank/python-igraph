@@ -1019,7 +1019,6 @@ class Graph(GraphBase):
           called C{codelength} that stores the code length determined by the
           algorithm.
         
-        Note graph must not contain isolated vertices. 
 
         @newfield ref: Reference
         @ref: M. Rosvall and C. T. Bergstrom: Maps of information flow reveal
