@@ -7,9 +7,9 @@ IGraph library.
                _3d_version_for
 """
 
-from __future__ import with_statement
 
-__license__ = u"""
+
+__license__ = """
 Copyright (C) 2006-2012  Tamás Nepusz <ntamas@gmail.com>
 Pázmány Péter sétány 1/a, 1117 Budapest, Hungary
 
@@ -54,7 +54,7 @@ import sys
 import operator
 
 from collections import defaultdict
-from itertools import izip
+
 from tempfile import mkstemp
 from warnings import warn
 
@@ -182,18 +182,18 @@ class Graph(GraphBase):
         # Initialize the graph
         GraphBase.__init__(self, nverts, edges, directed)
         # Set the graph attributes
-        for key, value in graph_attrs.iteritems():
-            if isinstance(key, (int, long)):
+        for key, value in graph_attrs.items():
+            if isinstance(key, int):
                 key = str(key)
             self[key] = value
         # Set the vertex attributes
-        for key, value in vertex_attrs.iteritems():
-            if isinstance(key, (int, long)):
+        for key, value in vertex_attrs.items():
+            if isinstance(key, int):
                 key = str(key)
             self.vs[key] = value
         # Set the edge attributes
-        for key, value in edge_attrs.iteritems():
-            if isinstance(key, (int, long)):
+        for key, value in edge_attrs.items():
+            if isinstance(key, int):
                 key = str(key)
             self.es[key] = value
 
@@ -214,7 +214,7 @@ class Graph(GraphBase):
         eid = self.ecount()
         result = self.add_edges([(source, target)])
         edge = self.es[eid]
-        for key, value in kwds.iteritems():
+        for key, value in kwds.items():
             edge[key] = value
         return result
 
@@ -244,7 +244,7 @@ class Graph(GraphBase):
         vid = self.vcount()
         result = self.add_vertices(1)
         vertex = self.vs[vid]
-        for key, value in kwds.iteritems():
+        for key, value in kwds.items():
             vertex[key] = value
         if name is not None:
             vertex["name"] = name
@@ -260,7 +260,7 @@ class Graph(GraphBase):
           name of a vertex to be added. Names will be assigned to the C{name}
           vertex attribute.
         """
-        if isinstance(n, basestring):
+        if isinstance(n, str):
             # Adding a single vertex with a name
             m = self.vcount()
             result = GraphBase.add_vertices(self, 1)
@@ -369,7 +369,7 @@ class Graph(GraphBase):
           graphs. Algorithmica 15, 351--372, 1996.
         """
         return [Cut(self, cut=cut, partition=part)
-                for cut, part in izip(*GraphBase.all_st_cuts(self, source, target))]
+                for cut, part in zip(*GraphBase.all_st_cuts(self, source, target))]
 
     def all_st_mincuts(self, source, target, capacity=None):
         """\
@@ -391,7 +391,7 @@ class Graph(GraphBase):
         """
         value, cuts, parts = GraphBase.all_st_mincuts(self, source, target, capacity)
         return [Cut(self, value, cut=cut, partition=part)
-                for cut, part in izip(cuts, parts)]
+                for cut, part in zip(cuts, parts)]
 
     def biconnected_components(self, return_articulation_points=False):
         """\
@@ -530,7 +530,7 @@ class Graph(GraphBase):
         if attribute not in self.es.attribute_names():
             raise ValueError("Attribute does not exist")
 
-        data = [[default] * self.vcount() for _ in xrange(self.vcount())]
+        data = [[default] * self.vcount() for _ in range(self.vcount())]
 
         if self.is_directed():
             for edge in self.es:
@@ -566,7 +566,7 @@ class Graph(GraphBase):
           the predecessors and the successors will be returned. Ignored
           for undirected graphs.
         """
-        return [self.neighbors(idx, mode) for idx in xrange(self.vcount())]
+        return [self.neighbors(idx, mode) for idx in range(self.vcount())]
 
     def get_adjedgelist(self, *args, **kwds):
         """get_adjedgelist(mode=OUT)
@@ -595,7 +595,7 @@ class Graph(GraphBase):
           the predecessors and the successors will be returned. Ignored
           for undirected graphs.
         """
-        return [self.incident(idx, mode) for idx in xrange(self.vcount())]
+        return [self.incident(idx, mode) for idx in range(self.vcount())]
 
     def gomory_hu_tree(self, capacity=None, flow="flow"):
         """gomory_hu_tree(capacity=None, flow="flow")
@@ -764,7 +764,7 @@ class Graph(GraphBase):
         hist = Histogram(bin_width=1)
         for i, length in enumerate(data):
             hist.add(i+1, length)
-        hist.unconnected = long(unconn)
+        hist.unconnected = int(unconn)
         return hist
 
     def pagerank(self, vertices=None, directed=True, damping=0.85,
@@ -1082,7 +1082,7 @@ class Graph(GraphBase):
           networks. Phys Rev E 76:036106, 2007.
           U{http://arxiv.org/abs/0709.2938}.
         """
-        if isinstance(fixed, basestring):
+        if isinstance(fixed, str):
             fixed = [bool(o) for o in g.vs[fixed]]
         cl = GraphBase.community_label_propagation(self, \
                 weights, initial, fixed)
@@ -1285,7 +1285,7 @@ class Graph(GraphBase):
         all M{k}-cores in increasing order of M{k}.
         """
         if len(args) == 0:
-            indices = xrange(self.vcount())
+            indices = range(self.vcount())
             return_single = False
         else:
             return_single = True
@@ -1301,7 +1301,7 @@ class Graph(GraphBase):
 
         corenesses = self.coreness()
         result = []
-        vidxs = xrange(self.vcount())
+        vidxs = range(self.vcount())
         for idx in indices:
             core_idxs = [vidx for vidx in vidxs if corenesses[vidx] >= idx]
             result.append(self.subgraph(core_idxs))
@@ -1458,9 +1458,9 @@ class Graph(GraphBase):
         vattrs = self.vertex_attributes()
         if "x" in vattrs and "y" in vattrs:
             if dim == 3 and "z" in vattrs:
-                return Layout(zip(self.vs["x"], self.vs["y"], self.vs["z"]))
+                return Layout(list(zip(self.vs["x"], self.vs["y"], self.vs["z"])))
             else:
-                return Layout(zip(self.vs["x"], self.vs["y"]))
+                return Layout(list(zip(self.vs["x"], self.vs["y"])))
 
         if self.vcount() <= 100 and self.is_connected():
             algo = "kk"
@@ -1579,7 +1579,7 @@ class Graph(GraphBase):
           note that igraph is able to read back the written adjacency matrix
           if and only if this is a single newline character
         """
-        if isinstance(f, basestring):
+        if isinstance(f, str):
             f = open(f, "w")
         matrix = self.get_adjacency(*args, **kwds)
         for row in matrix:
@@ -1605,7 +1605,7 @@ class Graph(GraphBase):
           no weights are stored, values larger than 1 are considered as
           edge multiplicities.
         @return: the created graph"""
-        if isinstance(f, basestring):
+        if isinstance(f, str):
             f = open(f)
         matrix, ri, weights = [], 0, {} 
         for line in f:
@@ -1642,7 +1642,7 @@ class Graph(GraphBase):
             source = self["source"]
         if target is None:
             target = self["target"]
-        if isinstance(capacity, basestring) and \
+        if isinstance(capacity, str) and \
                 capacity not in self.edge_attributes():
             warn("'%s' edge attribute does not exist" % capacity)
             capacity = None
@@ -1735,7 +1735,7 @@ class Graph(GraphBase):
         @return: C{None} if the graph was saved successfully to the
           given file, or a string if C{fname} was C{None}.
         """
-        import cPickle as pickle
+        import pickle as pickle
         if fname is None:
             return pickle.dumps(self, version)
         if not hasattr(fname, "write"):
@@ -1762,7 +1762,7 @@ class Graph(GraphBase):
         @return: C{None} if the graph was saved successfully to the
           given file.
         """
-        import cPickle as pickle
+        import pickle as pickle
         if not hasattr(fname, "write"):
             file_was_opened = True
             fname = gzip.open(fname, "wb")
@@ -1787,7 +1787,7 @@ class Graph(GraphBase):
           of an C{igraph} Graph object.
         @return: the created graph object.
         """
-        import cPickle as pickle
+        import pickle as pickle
         if hasattr(fname, "read"):
             # Probably a file or a file-like object
             result = pickle.load(fname)
@@ -1796,11 +1796,8 @@ class Graph(GraphBase):
             try:
                 fp = open(fname, "rb")
             except IOError:
-                if type(fname) is str:
-                    raise IOError("Cannot open file")
-                else:
-                    # No file with the given name, try unpickling directly. 
-                    result = pickle.loads(fname)
+                # No file with the given name, try unpickling directly
+                result = pickle.loads(fname)
             if fp is not None:
                 result = pickle.load(fp)
                 fp.close()
@@ -1814,7 +1811,7 @@ class Graph(GraphBase):
         @param fname: the name of the file or a stream to read from.
         @return: the created graph object.
         """
-        import cPickle as pickle
+        import pickle as pickle
         if hasattr(fname, "read"):
             # Probably a file or a file-like object
             if isinstance(fname, gzip.GzipFile):
@@ -1833,7 +1830,7 @@ class Graph(GraphBase):
         @param fname: the name of the file or a stream to read from.
         @return: the created graph object.
         """
-        import cPickle as pickle
+        import pickle as pickle
         if hasattr(fname, "read"):
             # Probably a file or a file-like object
             if isinstance(fname, gzip.GzipFile):
@@ -1907,7 +1904,7 @@ class Graph(GraphBase):
             try:
                 labels = self.vs.get_attribute_values(labels)
             except KeyError:
-                labels = [x+1 for x in xrange(self.vcount())]
+                labels = [x+1 for x in range(self.vcount())]
         elif labels is None:
             labels = [""] * self.vcount()
 
@@ -1915,7 +1912,7 @@ class Graph(GraphBase):
             try:
                 colors = self.vs.get_attribute_values(colors)
             except KeyError:
-                colors = ["red" for x in xrange(self.vcount())]
+                colors = ["red" for x in range(self.vcount())]
 
         if isinstance(shapes, str):
             try:
@@ -1927,7 +1924,7 @@ class Graph(GraphBase):
             try:
                 edge_colors = self.es.get_attribute_values(edge_colors)
             except KeyError:
-                edge_colors = ["black" for x in xrange(self.ecount())]
+                edge_colors = ["black" for x in range(self.ecount())]
 
         if not isinstance(font_size, str):
             font_size = "%spx" % str(font_size)
@@ -1936,7 +1933,7 @@ class Graph(GraphBase):
                 raise ValueError("font size can't contain a semicolon")
 
         vcount = self.vcount()
-        labels.extend(str(i+1) for i in xrange(len(labels), vcount))
+        labels.extend(str(i+1) for i in range(len(labels), vcount))
         colors.extend(["red"] * (vcount - len(colors)))
 
         f = open(fname, "w")
@@ -1962,15 +1959,15 @@ class Graph(GraphBase):
                 
         directed = self.is_directed()
 
-        print >> f, '<?xml version="1.0" encoding="UTF-8" standalone="no"?>'
-        print >> f, '<!-- Created by igraph (http://igraph.org/) for use in Inkscape (http://www.inkscape.org/) -->'
-        print >> f
-        print >> f, '<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"'
-        print >> f, 'width="{0}px" height="{1}px">'.format(width, height),
+        print('<?xml version="1.0" encoding="UTF-8" standalone="no"?>', file=f)
+        print('<!-- Created by igraph (http://igraph.org/) for use in Inkscape (http://www.inkscape.org/) -->', file=f)
+        print(file=f)
+        print('<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"', file=f)
+        print('width="{0}px" height="{1}px">'.format(width, height), end=' ', file=f)
         
         
         edge_color_dict = {}
-        print >> f, '<defs id="defs3">'
+        print('<defs id="defs3">', file=f)
         for e_col in set(edge_colors):
             if e_col == "#000000":
                 marker_index = ""
@@ -1978,23 +1975,23 @@ class Graph(GraphBase):
                 marker_index = str(len(edge_color_dict))
             # Print an arrow marker for each possible line color 
             # This is a copy of Inkscape's standard Arrow 2 marker
-            print >> f, '<marker'
-            print >> f, '   inkscape:stockid="Arrow2Lend{0}"'.format(marker_index)
-            print >> f, '   orient="auto"'
-            print >> f, '   refY="0.0"'
-            print >> f, '   refX="0.0"'
-            print >> f, '   id="Arrow2Lend{0}"'.format(marker_index)
-            print >> f, '   style="overflow:visible;">'
-            print >> f, '  <path'
-            print >> f, '     id="pathArrow{0}"'.format(marker_index)
-            print >> f, '     style="font-size:12.0;fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;fill:{0}"'.format(e_col)
-            print >> f, '     d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "'
-            print >> f, '     transform="scale(1.1) rotate(180) translate(1,0)" />'
-            print >> f, '</marker>'
+            print('<marker', file=f)
+            print('   inkscape:stockid="Arrow2Lend{0}"'.format(marker_index), file=f)
+            print('   orient="auto"', file=f)
+            print('   refY="0.0"', file=f)
+            print('   refX="0.0"', file=f)
+            print('   id="Arrow2Lend{0}"'.format(marker_index), file=f)
+            print('   style="overflow:visible;">', file=f)
+            print('  <path', file=f)
+            print('     id="pathArrow{0}"'.format(marker_index), file=f)
+            print('     style="font-size:12.0;fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;fill:{0}"'.format(e_col), file=f)
+            print('     d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "', file=f)
+            print('     transform="scale(1.1) rotate(180) translate(1,0)" />', file=f)
+            print('</marker>', file=f)
             
             edge_color_dict[e_col] = "Arrow2Lend{0}".format(marker_index)
-        print >> f, '</defs>'
-        print >> f, '<g inkscape:groupmode="layer" id="layer2" inkscape:label="Lines" sodipodi:insensitive="true">'
+        print('</defs>', file=f)
+        print('<g inkscape:groupmode="layer" id="layer2" inkscape:label="Lines" sodipodi:insensitive="true">', file=f)
        
         for eidx, edge in enumerate(self.es):
             vidxs = edge.tuple
@@ -2006,68 +2003,68 @@ class Graph(GraphBase):
             x2 = x2 - vertex_size * math.cos(angle)
             y2 = y2 - vertex_size * math.sin(angle)
             
-            print >> f, '<path'
-            print >> f, '    style="fill:none;stroke:{0};stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none{1}"'\
+            print('<path', file=f)
+            print('    style="fill:none;stroke:{0};stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none{1}"'\
                         .format(edge_colors[eidx], ";marker-end:url(#{0})".\
                                 format(edge_color_dict[edge_colors[eidx]]) \
-                                if directed else "")
-            print >> f, '    d="M {0},{1} {2},{3}"'.format(x1, y1, x2, y2)
-            print >> f, '    id="path{0}"'.format(eidx)
-            print >> f, '    inkscape:connector-type="polyline"'
-            print >> f, '    inkscape:connector-curvature="0"'
-            print >> f, '    inkscape:connection-start="#g{0}"'.format(edge.source)
-            print >> f, '    inkscape:connection-start-point="d4"'
-            print >> f, '    inkscape:connection-end="#g{0}"'.format(edge.target)
-            print >> f, '    inkscape:connection-end-point="d4" />'
+                                if directed else ""), file=f)
+            print('    d="M {0},{1} {2},{3}"'.format(x1, y1, x2, y2), file=f)
+            print('    id="path{0}"'.format(eidx), file=f)
+            print('    inkscape:connector-type="polyline"', file=f)
+            print('    inkscape:connector-curvature="0"', file=f)
+            print('    inkscape:connection-start="#g{0}"'.format(edge.source), file=f)
+            print('    inkscape:connection-start-point="d4"', file=f)
+            print('    inkscape:connection-end="#g{0}"'.format(edge.target), file=f)
+            print('    inkscape:connection-end-point="d4" />', file=f)
 
-        print >> f, "  </g>"
-        print >> f
+        print("  </g>", file=f)
+        print(file=f)
 
-        print >> f, '  <g inkscape:label="Nodes" \
-                    inkscape:groupmode="layer" id="layer1">'
-        print >> f, '  <!-- Vertices -->'
+        print('  <g inkscape:label="Nodes" \
+                    inkscape:groupmode="layer" id="layer1">', file=f)
+        print('  <!-- Vertices -->', file=f)
 
         if any(x == 3 for x in shapes):
             # Only import tkFont if we really need it. Unfortunately, this will
             # flash up an unneccesary Tk window in some cases        
-            import tkFont
-            import Tkinter as tk
+            import tkinter.font
+            import tkinter as tk
             # This allows us to dynamically size the width of the nodes
-            font = tkFont.Font(root=tk.Tk(), font=("Sans", font_size, tkFont.NORMAL))
+            font = tkinter.font.Font(root=tk.Tk(), font=("Sans", font_size, tkinter.font.NORMAL))
         
         for vidx in range(self.vcount()):
-            print >> f, '    <g id="g{0}" transform="translate({1},{2})">'.\
-                        format(vidx, layout[vidx][0], layout[vidx][1])
+            print('    <g id="g{0}" transform="translate({1},{2})">'.\
+                        format(vidx, layout[vidx][0], layout[vidx][1]), file=f)
             if shapes[vidx] == 1:
                 # Undocumented feature: can handle two colors but only for circles
                 c = str(colors[vidx])
                 if " " in c:
                     c = c.split(" ")
                     vs = str(vertex_size)
-                    print >> f, '     <path d="M -{0},0 A{0},{0} 0 0,0 {0},0 L \
-                                -{0},0" fill="{1}"/>'.format(vs, c[0])
-                    print >> f, '     <path d="M -{0},0 A{0},{0} 0 0,1 {0},0 L \
-                                -{0},0" fill="{1}"/>'.format(vs, c[1])
-                    print >> f, '     <circle cx="0" cy="0" r="{0}" fill="none"/>'\
-                                .format(vs)
+                    print('     <path d="M -{0},0 A{0},{0} 0 0,0 {0},0 L \
+                                -{0},0" fill="{1}"/>'.format(vs, c[0]), file=f)
+                    print('     <path d="M -{0},0 A{0},{0} 0 0,1 {0},0 L \
+                                -{0},0" fill="{1}"/>'.format(vs, c[1]), file=f)
+                    print('     <circle cx="0" cy="0" r="{0}" fill="none"/>'\
+                                .format(vs), file=f)
                 else:
-                    print >> f, '     <circle cx="0" cy="0" r="{0}" fill="{1}"/>'.\
-                        format(str(vertex_size), str(colors[vidx]))
+                    print('     <circle cx="0" cy="0" r="{0}" fill="{1}"/>'.\
+                        format(str(vertex_size), str(colors[vidx])), file=f)
             elif shapes[vidx] == 2:
-                print >> f, '      <rect x="-{0}" y="-{0}" width="{1}" height="{1}" id="rect{2}" style="fill:{3};fill-opacity:1" />'.\
-                    format(vertex_size, vertex_size * 2, vidx, colors[vidx])
+                print('      <rect x="-{0}" y="-{0}" width="{1}" height="{1}" id="rect{2}" style="fill:{3};fill-opacity:1" />'.\
+                    format(vertex_size, vertex_size * 2, vidx, colors[vidx]), file=f)
             elif shapes[vidx] == 3:
                 (vertex_width, vertex_height) = (font.measure(str(labels[vidx])) + 2, font.metrics("linespace") + 2)
-                print >> f, '      <rect ry="5" rx="5" x="-{0}" y="-{1}" width="{2}" height="{3}" id="rect{4}" style="fill:{5};fill-opacity:1" />'.\
-                    format(vertex_width / 2., vertex_height / 2., vertex_width, vertex_height, vidx, colors[vidx])
+                print('      <rect ry="5" rx="5" x="-{0}" y="-{1}" width="{2}" height="{3}" id="rect{4}" style="fill:{5};fill-opacity:1" />'.\
+                    format(vertex_width / 2., vertex_height / 2., vertex_width, vertex_height, vidx, colors[vidx]), file=f)
             
-            print >> f, '      <text sodipodi:linespacing="125%" y="{0}" x="0" id="text{1}" style="font-size:{2}px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans">'.format(vertex_size / 2.,vidx, font_size)
-            print >> f, '<tspan y="{0}" x="0" id="tspan{1}" sodipodi:role="line">{2}</tspan></text>'.format(vertex_size / 2.,vidx, str(labels[vidx]))
-            print >> f, '    </g>'
+            print('      <text sodipodi:linespacing="125%" y="{0}" x="0" id="text{1}" style="font-size:{2}px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans">'.format(vertex_size / 2.,vidx, font_size), file=f)
+            print('<tspan y="{0}" x="0" id="tspan{1}" sodipodi:role="line">{2}</tspan></text>'.format(vertex_size / 2.,vidx, str(labels[vidx])), file=f)
+            print('    </g>', file=f)
 
-        print >> f, '</g>'
-        print >> f
-        print >> f, '</svg>'
+        print('</g>', file=f)
+        print(file=f)
+        print('</svg>', file=f)
                 
         f.close()
 
@@ -2282,13 +2279,13 @@ class Graph(GraphBase):
         vertex_attrs, n = {}, 0
         if vertices:
             for idx, vertex_data in enumerate(vertices):
-                for k, v in vertex_data.iteritems():
+                for k, v in vertex_data.items():
                     try:
                         vertex_attrs[k].append((idx, v))
                     except KeyError:
                         vertex_attrs[k] = [(idx, v)]
                 n += 1
-            for k, v in vertex_attrs.iteritems():
+            for k, v in vertex_attrs.items():
                 vertex_attrs[k] = create_list_from_indices(v, n)
         else:
             vertex_attrs[vertex_name_attr] = []
@@ -2317,7 +2314,7 @@ class Graph(GraphBase):
                     g.vs[n][vertex_name_attr] = dst_name
                     n += 1
                 g.add_edge(v1, v2)
-                for k, v in edge_data.iteritems():
+                for k, v in edge_data.items():
                     g.es[idx][k] = v
 
             return g
@@ -2328,13 +2325,13 @@ class Graph(GraphBase):
                 v2 = vertex_name_map[edge_data[efk_dest]]
 
                 edge_list.append((v1, v2))
-                for k, v in edge_data.iteritems():
+                for k, v in edge_data.items():
                     try:
                         edge_attrs[k].append((idx, v))
                     except KeyError:
                         edge_attrs[k] = [(idx, v)]
                 m += 1
-            for k, v in edge_attrs.iteritems():
+            for k, v in edge_attrs.items():
                 edge_attrs[k] = create_list_from_indices(v, m)
 
             # It may have happened that some vertices were added during
@@ -2342,8 +2339,8 @@ class Graph(GraphBase):
             if len(vertex_name_map) > n:
                 diff = len(vertex_name_map) - n
                 more = [None] * diff
-                for k, v in vertex_attrs.iteritems(): v.extend(more)
-                vertex_attrs[vertex_name_attr] = vertex_name_map.values()
+                for k, v in vertex_attrs.items(): v.extend(more)
+                vertex_attrs[vertex_name_attr] = list(vertex_name_map.values())
                 n = len(vertex_name_map)
 
             # Create the graph
@@ -2402,7 +2399,7 @@ class Graph(GraphBase):
             if not weights:
                 edge_attrs = ()
             else:
-                if not isinstance(weights, basestring):
+                if not isinstance(weights, str):
                     weights = "weight"
                 edge_attrs = [weights]
         else:
@@ -2410,7 +2407,7 @@ class Graph(GraphBase):
                 raise ValueError("`weights` must be False if `edge_attrs` is "
                         "not None")
 
-        if isinstance(edge_attrs, basestring):
+        if isinstance(edge_attrs, str):
             edge_attrs = [edge_attrs]
 
         # Set up a vertex ID generator
@@ -2432,7 +2429,7 @@ class Graph(GraphBase):
 
         # Set up the "name" vertex attribute
         vertex_attributes = {}
-        vertex_attributes[vertex_name_attr] = idgen.values()
+        vertex_attributes[vertex_name_attr] = list(idgen.values())
         n = len(idgen)
 
         # Construct the graph
@@ -2712,7 +2709,7 @@ class Graph(GraphBase):
 
         @see: L{__add__}
         """
-        if isinstance(other, (int, basestring)):
+        if isinstance(other, (int, str)):
             self.add_vertices(other)
             return self
         elif isinstance(other, tuple) and len(other) == 2:
@@ -2724,7 +2721,7 @@ class Graph(GraphBase):
             if isinstance(other[0], tuple):
                 self.add_edges(other)
                 return self
-            if isinstance(other[0], basestring):
+            if isinstance(other[0], str):
                 self.add_vertices(other)
                 return self
         return NotImplemented
@@ -2742,7 +2739,7 @@ class Graph(GraphBase):
           is extended by multiple edges. If it is a L{Graph}, a disjoint
           union is performed.
         """
-        if isinstance(other, (int, basestring)):
+        if isinstance(other, (int, str)):
             g = self.copy()
             g.add_vertices(other)
         elif isinstance(other, tuple) and len(other) == 2:
@@ -2753,7 +2750,7 @@ class Graph(GraphBase):
                 if isinstance(other[0], tuple):
                     g = self.copy()
                     g.add_edges(other)
-                elif isinstance(other[0], basestring):
+                elif isinstance(other[0], str):
                     g = self.copy()
                     g.add_vertices(other)
                 elif isinstance(other[0], Graph):
@@ -2783,7 +2780,7 @@ class Graph(GraphBase):
             if len(other)>0:
                 if isinstance(other[0], tuple):
                     self.delete_edges(other)
-                elif isinstance(other[0], (int, long, basestring)):
+                elif isinstance(other[0], (int, str)):
                     self.delete_vertices(other)
                 else:
                     return NotImplemented
@@ -2814,7 +2811,7 @@ class Graph(GraphBase):
             return self.difference(other)
 
         result = self.copy()
-        if isinstance(other, (int, long, basestring)):
+        if isinstance(other, (int, str)):
             result.delete_vertices([other])
         elif isinstance(other, tuple) and len(other) == 2:
             result.delete_edges([other])
@@ -2822,7 +2819,7 @@ class Graph(GraphBase):
             if len(other)>0:
                 if isinstance(other[0], tuple):
                     result.delete_edges(other)
-                elif isinstance(other[0], (int, long, basestring)):
+                elif isinstance(other[0], (int, str)):
                     result.delete_vertices(other)
                 else:
                     return NotImplemented
@@ -2861,7 +2858,7 @@ class Graph(GraphBase):
 
         return NotImplemented
 
-    def __nonzero__(self):
+    def __bool__(self):
         """Returns True if the graph has at least one vertex, False otherwise.
         """
         return self.vcount() > 0
@@ -2872,7 +2869,7 @@ class Graph(GraphBase):
         This method is needed to allow the graph to react to additions
         with lists, tuples, integers, strings, vertices, edges and so on.
         """
-        if isinstance(other, (int, tuple, list, basestring)):
+        if isinstance(other, (int, tuple, list, str)):
             return self, other
         if isinstance(other, _igraph.Vertex):
             return self, other
@@ -3219,7 +3216,7 @@ class VertexSeq(_igraph.VertexSeq):
       >>> g=Graph.Full(3)
       >>> for v in g.vs:
       ...   v["value"] = v.index ** 2
-      ...
+      ... 
       >>> [v["value"] ** 0.5 for v in g.vs]
       [0.0, 1.0, 2.0]
       
@@ -3230,7 +3227,7 @@ class VertexSeq(_igraph.VertexSeq):
       >>> g=Graph.Full(3)
       >>> for idx, v in enumerate(g.vs):
       ...   v["weight"] = idx*(idx+1)
-      ...
+      ... 
       >>> g.vs["weight"]
       [0, 2, 6]
       >>> g.vs.select(1,2)["weight"] = [10, 20]
@@ -3413,7 +3410,7 @@ class VertexSeq(_igraph.VertexSeq):
             "ne": operator.ne, \
             "in": lambda a, b: a in b, \
             "notin": lambda a, b: a not in b }
-        for keyword, value in kwds.iteritems():
+        for keyword, value in kwds.items():
             if "_" not in keyword or keyword.rindex("_") == 0:
                 keyword = keyword+"_eq"
             attr, _, op = keyword.rpartition("_")
@@ -3464,8 +3461,8 @@ class EdgeSeq(_igraph.EdgeSeq):
     
       >>> g=Graph.Full(3)
       >>> for e in g.es:
-      ...   print e.tuple
-      ...
+      ...   print(e.tuple)
+      ... 
       (0, 1)
       (0, 2)
       (1, 2)
@@ -3479,10 +3476,10 @@ class EdgeSeq(_igraph.EdgeSeq):
       >>> g=Graph.Full(3)
       >>> for idx, e in enumerate(g.es):
       ...   e["weight"] = idx*(idx+1)
-      ...
+      ... 
       >>> g.es["weight"]
       [0, 2, 6]
-      >>> g.es["weight"] = range(3)
+      >>> g.es["weight"] = list(range(3))
       >>> g.es["weight"]
       [0, 1, 2]
 
@@ -3696,7 +3693,7 @@ class EdgeSeq(_igraph.EdgeSeq):
             "ne": operator.ne, \
             "in": lambda a, b: a in b, \
             "notin": lambda a, b: a not in b }
-        for keyword, value in kwds.iteritems():
+        for keyword, value in kwds.items():
             if "_" not in keyword or keyword.rindex("_") == 0:
                 keyword = keyword+"_eq"
             pos = keyword.rindex("_")
@@ -3853,7 +3850,7 @@ def _add_proxy_methods():
         "subgraph_edges": "subgraph"
     }
 
-    for klass, methods in decorated_methods.iteritems():
+    for klass, methods in decorated_methods.items():
         for method in methods:
             new_method_name = rename_methods[klass].get(method, method)
             setattr(klass, new_method_name, _graphmethod(None, method))
@@ -3952,7 +3949,7 @@ def autocurve(graph, attribute="curved", default=0):
             multiplicities[u, v].append(edge.index)
 
     result = [default] * graph.ecount()
-    for pair, eids in multiplicities.iteritems():
+    for pair, eids in multiplicities.items():
         # Is it a single edge?
         if len(eids) < 2:
             continue
@@ -4023,3 +4020,4 @@ def summary(obj, stream=None, *args, **kwds):
 
 config = configuration.init()
 del construct_graph_from_formula
+
